@@ -9,6 +9,7 @@ anyhow = { workspace = true }
 enumset = { version = "1.0.12", features=["serde"] }
 geom = { workspace = true }
 osm-reader = { git = "https://github.com/a-b-street/osm-reader", features = ["serde"] }
+muv-osm = { version = "0.1.0", path = "../../muv8/muv-osm", features = ["lanes"] }
 serde = { workspace = true }
 
 [dev-dependencies]
