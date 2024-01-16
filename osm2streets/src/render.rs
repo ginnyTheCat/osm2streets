@@ -131,7 +131,7 @@ impl StreetNetwork {
                 f.set_property("type", format!("{:?}", lane.lt));
                 f.set_property("road", road.id.0);
                 f.set_property("layer", road.layer);
-                f.set_property("speed_limit", format!("{:?}", road.speed_limit));
+                f.set_property("speed_limit", format!("{:?}", lane.maxspeed));
                 f.set_property("index", idx);
                 f.set_property("width", lane.width.inner_meters());
                 f.set_property("direction", format!("{:?}", lane.dir));

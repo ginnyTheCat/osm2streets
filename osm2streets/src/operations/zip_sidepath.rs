@@ -108,6 +108,7 @@ impl Sidepath {
             lt: LaneType::Buffer(BufferType::Planters),
             dir: Direction::Fwd,
             width: LaneSpec::typical_lane_width(LaneType::Buffer(BufferType::Planters)),
+            maxspeed: None,
             allowed_turns: Default::default(),
         };
 

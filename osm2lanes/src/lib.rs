@@ -14,7 +14,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-use geom::Distance;
+use geom::{Distance, Speed};
 
 pub use algorithm::get_lane_specs_ltr;
 
@@ -267,6 +267,7 @@ pub struct LaneSpec {
     pub lt: LaneType,
     pub dir: Direction,
     pub width: Distance,
+    pub maxspeed: Option<Speed>,
     /// Turn restrictions for this lane. An empty set represents that no restrictions are indicated
     /// (though local rules might still dictate restrictions).
     /// Turns for specific vehicle types (`turn:bus:lanes` and such) are not yet captured.

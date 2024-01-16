@@ -7,7 +7,7 @@ use muv_osm::{
         travel::{TravelLane, Turn},
         LaneVariant,
     },
-    units::{Distance, Unit},
+    units::{Distance, Speed, SpeedUnit, Unit},
     AccessLevel, Conditional, Lifecycle, TMode, Tag,
 };
 
@@ -100,9 +100,9 @@ pub fn get_lane_specs_ltr(tags: &Tags, cfg: &MapConfig) -> Vec<LaneSpec> {
                         lt = LaneType::Construction;
                     }
 
-                    let turns = match dir {
-                        Direction::Fwd => forward_turns,
-                        Direction::Back => backward_turns,
+                    let (travel, turns) = match dir {
+                        Direction::Fwd => (t.forward, forward_turns),
+                        Direction::Back => (t.backward, backward_turns),
                     };
 
                     let mut allowed_turns = EnumSet::default();
@@ -149,6 +149,11 @@ pub fn get_lane_specs_ltr(tags: &Tags, cfg: &MapConfig) -> Vec<LaneSpec> {
                             .unwrap_or_else(|| {
                                 LaneSpec::typical_lane_widths(lt, highway_type)[0].0
                             }),
+                        maxspeed: travel
+                            .maxspeed
+                            .get(TMode::All)
+                            .and_then(|s| s.default.as_ref())
+                            .map(to_geom_speed),
                         allowed_turns,
                     }
                 }
@@ -170,6 +175,7 @@ pub fn get_lane_specs_ltr(tags: &Tags, cfg: &MapConfig) -> Vec<LaneSpec> {
                         .unwrap_or_else(|| {
                             LaneSpec::typical_lane_widths(LaneType::Parking, highway_type)[0].0
                         }),
+                    maxspeed: None,
                     allowed_turns: EnumSet::default(),
                 },
             }
@@ -179,4 +185,12 @@ pub fn get_lane_specs_ltr(tags: &Tags, cfg: &MapConfig) -> Vec<LaneSpec> {
 
 fn to_geom_distance(d: &Unit<Distance>) -> geom::Distance {
     geom::Distance::meters(d.to(Distance::Metre).value as f64)
+}
+
+fn to_geom_speed(s: &SpeedUnit) -> geom::Speed {
+    geom::Speed::meters_per_second(match s {
+        SpeedUnit::None => f64::INFINITY,
+        SpeedUnit::Walk => 3.0,
+        SpeedUnit::Unit(u) => u.to(Speed::MetresPerSecond).value as f64,
+    })
 }

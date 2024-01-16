@@ -81,6 +81,7 @@ impl LaneSpec {
                     lt: LaneType::Biking,
                     dir,
                     width: LaneSpec::typical_lane_width(LaneType::Biking),
+                    maxspeed: None,
                     allowed_turns: Default::default(),
                 };
                 if let Some(buffer) = buffer_type {
@@ -90,6 +91,7 @@ impl LaneSpec {
                             lt: LaneType::Buffer(buffer),
                             dir,
                             width: LaneSpec::typical_lane_width(LaneType::Buffer(buffer)),
+                            maxspeed: None,
                             allowed_turns: Default::default(),
                         },
                     );

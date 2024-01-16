@@ -26,6 +26,7 @@ impl LaneSpec {
                 },
                 // Dummy
                 width: Distance::ZERO,
+                maxspeed: None,
                 allowed_turns: Default::default(),
             })
             .collect()

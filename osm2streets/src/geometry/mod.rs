@@ -61,6 +61,7 @@ impl InputRoad {
                 lt: crate::LaneType::Driving,
                 dir: crate::Direction::Fwd,
                 width: self.total_width,
+                maxspeed: None,
                 allowed_turns: Default::default(),
             }],
             // Mostly dummy values, except for what selfEdge::calculate needs
@@ -69,7 +70,6 @@ impl InputRoad {
             name: None,
             internal_junction_road: false,
             layer: 0,
-            speed_limit: None,
             reference_line: PolyLine::dummy(),
             reference_line_placement: osm2lanes::Placement::Transition,
             trim_start: Distance::ZERO,
