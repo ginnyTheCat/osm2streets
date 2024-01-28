@@ -2,7 +2,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use abstutil::Tags;
-use geom::{Angle, Distance, PolyLine, Speed};
+use geom::{Angle, Distance, PolyLine};
 
 use osm2lanes::{osm, RoadPosition};
 
