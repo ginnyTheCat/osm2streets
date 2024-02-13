@@ -17,7 +17,7 @@ use crate::{
 
 fn mode_allowed(val: &Conditional<AccessLevel>) -> bool {
     matches!(
-        val.default,
+        val.base(),
         Some(
             AccessLevel::Yes
                 | AccessLevel::Designated
@@ -140,10 +140,19 @@ fn map_travel_lane(
     highway_type: &str,
     forward: bool,
 ) -> LaneSpec {
-    let forward_turns = t.forward.turn.get(TMode::All).and_then(|t| t.default);
-    let backward_turns = t.backward.turn.get(TMode::All).and_then(|t| t.default);
+    let forward_turns = t.forward.turn.get(TMode::All).and_then(|c| c.base());
+    let backward_turns = t.backward.turn.get(TMode::All).and_then(|c| c.base());
 
-    let (mut lt, dir) = if forward_turns.is_some_and(|t| t.contains(Turn::Left))
+    let (lt, dir) = if lifecycle != Lifecycle::Normal {
+        (
+            LaneType::Construction,
+            if forward {
+                Direction::Fwd
+            } else {
+                Direction::Back
+            },
+        )
+    } else if forward_turns.is_some_and(|t| t.contains(Turn::Left))
         && backward_turns.is_some_and(|t| t.contains(Turn::Left))
     {
         (LaneType::SharedLeftTurn, Direction::Fwd)
@@ -157,17 +166,11 @@ fn map_travel_lane(
             .unwrap_or((LaneType::Buffer(BufferType::Stripes), Direction::Fwd))
     };
 
-    if lifecycle == Lifecycle::Construction {
-        lt = LaneType::Construction;
-    }
-
-    let (travel, turns) = match dir {
-        Direction::Fwd => (t.forward, forward_turns),
-        Direction::Back => (t.backward, backward_turns),
-    };
-
     let mut allowed_turns = EnumSet::default();
-    if let Some(turns) = turns {
+    if let Some(turns) = match dir {
+        Direction::Fwd => forward_turns,
+        Direction::Back => backward_turns,
+    } {
         if turns.contains(Turn::Through) {
             allowed_turns.insert(TurnDirection::Through);
         }
@@ -200,6 +203,11 @@ fn map_travel_lane(
         }
     }
 
+    let travel = match dir {
+        Direction::Fwd => t.forward,
+        Direction::Back => t.backward,
+    };
+
     LaneSpec {
         lt,
         dir,
@@ -210,7 +218,7 @@ fn map_travel_lane(
         maxspeed: travel
             .maxspeed
             .get(TMode::All)
-            .and_then(|s| s.default.as_ref())
+            .and_then(|c| c.base())
             .map(to_geom_speed),
         allowed_turns,
     }

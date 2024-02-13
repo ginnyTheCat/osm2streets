@@ -102,6 +102,7 @@ impl OsmExtract {
             "motorway_link",
             "path",
             "pedestrian",
+            "platform",
             "primary",
             "primary_link",
             "residential",
